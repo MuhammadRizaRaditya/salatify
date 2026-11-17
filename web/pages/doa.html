@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kumpulan Doa — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="/web/dashboard.html" class="brand"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links"><a href="/web/dashboard.html">Beranda</a><a href="/web/doa.html" class="active">Doa</a></div>
+    <div class="nav-actions">
+      <button class="btn btn-icon" id="btn-logout" title="Keluar">🚪</button>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+  <div style="max-width:640px;margin:0 auto">
+    <h2 style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:6px">Kumpulan Doa</h2>
+    <p class="section-sub" style="margin-bottom:16px">Doa harian dengan Arab, latin, dan terjemahan Indonesia.</p>
+    <div class="form-group" style="margin-bottom:16px">
+      <input type="text" id="cari" placeholder="Cari doa..." style="padding:10px 14px;border-radius:10px;border:1px solid rgba(18,63,50,0.16);background:var(--surface);color:var(--text);width:100;font:inherit;font-size:0.95rem">
+    </div>
+    <div id="daftar-doa">
+      <!-- diisi JS -->
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { doa } from './static/js/api.js';
+  import { toast, setupNavbar, setupAuthLinks, escapeHtml } from './static/js/app.js';
+  setupNavbar(); setupAuthLinks();
+
+  const elDaftar = document.getElementById('daftar-doa');
+  const elCari = document.getElementById('cari');
+
+  async function load(q){
+    try{
+      const list = await doa.list(q ? { q } : {});
+      if(!list.length){
+        elDaftar.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:24px">Doa tidak ditemukan.</p>';
+        return;
+      }
+      elDaftar.innerHTML = list.map(d=>
+        `<a href="/web/doa-detail.html?id=${d.id}" class="doa-item btn" style="color:inherit;display:flex">
+          <div class="doa-info" style="flex:1">
+            <div class="title">${escapeHtml(d.judul)}</div>
+            <div class="sub">${escapeHtml(d.terjemahan||'')}</div>
+          </div>
+          <div class="doa-actions">
+            <span style="font-size:0.8rem;color:var(--text-muted)">${d.is_favorit?'★':'☆'}</span>
+          </div>
+        </a>`
+      ).join('');
+    }catch(err){ toast('Gagal memuat doa: '+err.message,'error'); }
+  }
+  load();
+
+  elCari.addEventListener('input', (e)=> load(e.target.value));
+</script>
+</body>
+</html>
