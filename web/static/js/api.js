@@ -12,7 +12,7 @@ function removeToken(){ localStorage.removeItem(TOKEN_KEY); localStorage.removeI
 function setUser(u){ localStorage.setItem(USER_KEY, JSON.stringify(u)); }
 function getUser(){ try{ return JSON.parse(localStorage.getItem(USER_KEY)||'null'); }catch{ return null; } }
 
-async function api(path, { method='GET', body, auth=true, headers={} }={}){
+export async function api(path, { method='GET', body, auth=true, headers={} }={}){
   const h = { ...headers };
   if(auth && getToken()) h.Authorization = 'Bearer ' + getToken();
   if(body && !(body instanceof FormData)) h['Content-Type']='application/json';

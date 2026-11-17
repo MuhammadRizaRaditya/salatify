@@ -73,6 +73,8 @@ STATIC_DIR = os.path.join(WEB_DIR, "static")
 PAGES_DIR = os.path.join(WEB_DIR, "pages")
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Keep cached pages using the former relative asset URLs working during rollout.
+app.mount("/web/static", StaticFiles(directory=STATIC_DIR), name="web-static-compat")
 
 
 def _page(file_name: str):
