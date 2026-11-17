@@ -151,6 +151,30 @@ File APK hasil build disimpan di `bin/salatify-1.0.0-debug.apk`.
 - Password tidak ditampilkan di database atau log.
 - Data pengguna terpisah per user_id.
 
+## Versi Website
+
+SALATIFY sekarang juga memiliki versi website yang dapat diakses melalui browser Google Chrome dan Microsoft Edge. Versi website menggunakan:
+
+- **Frontend**: HTML, CSS, JavaScript (responsive design, PWA)
+- **Backend**: FastAPI (Python) dengan JWT authentication
+- **Database**: PostgreSQL (produksi) / SQLite (development)
+- **Fitur**: Semua 15 fitur terintegrasi, termasuk landing page, dashboard, jadwal sholat, kiblat, dzikir, doa, Al-Qur'an, dan pengaturan
+
+### Cara Menjalankan Website
+
+Lihat dokumentasi lengkap di `docs/running_local.md`:
+- Backend FastAPI: `cd backend && uvicorn main:app --port 8000`
+- Website: Buka `http://127.0.0.1:8000/web/index.html` atau file HTML langsung
+- API Docs: `http://127.0.0.1:8000/docs`
+
+### Integrasi dengan Aplikasi Android
+
+Adapter API tersedia di `services/api_client.py`. Aplikasi Android tetap berjalan lokal dengan SQLite, adapter opsional untuk sinkronisasi ke backend.
+
+### Deployment
+
+Lihat `docs/running_local.md` untuk panduan deployment ke Render, Heroku, atau VPS.
+
 ## Lisensi
 
 Dikembangkan oleh Hasan, Luqman, Riza, dan Wisnu.

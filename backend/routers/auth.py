@@ -45,16 +45,24 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
 
 @router.post("/guest", response_model=Token)
 def login_guest(db: Session = Depends(get_db)):
-    user = User(
-        username="tamu",
-        email="tamu@salatify.local",
-        password_hash=hash_password("guest"),
-        is_guest=True,
-        is_active=True,
+    user = (
+        db.query(User)
+        .filter((User.username == "tamu") | (User.email == "tamu@salatify.local"))
+        .first()
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    if user and not user.is_guest:
+        raise HTTPException(status_code=409, detail="Akun tamu tidak tersedia.")
+    if user is None:
+        user = User(
+            username="tamu",
+            email="tamu@salatify.local",
+            password_hash=hash_password("guest"),
+            is_guest=True,
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     token = create_access_token({"sub": str(user.id)})
     return {"access_token": token, "token_type": "bearer"}
 
