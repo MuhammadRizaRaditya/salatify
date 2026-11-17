@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail Doa — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="/web/doa.html" class="brand"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links"><a href="/web/doa.html">Doa</a></div>
+    <div class="nav-actions">
+      <button class="btn btn-icon" id="btn-logout" title="Keluar">🚪</button>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+  <div style="max-width:640px;margin:0 auto">
+    <h2 id="judul" style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:6px">Doa</h2>
+    <div id="referensi" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:18px"></div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="detail-block">
+        <span class="lbl">Arab</span>
+        <div class="val" id="arab" style="font-size:1.3rem;line-height:1.9;direction:rtl;text-align:right"></div>
+      </div>
+      <div class="detail-block" style="margin-top:12px">
+        <span class="lbl">Latin</span>
+        <div class="val" id="latin" style="font-style:italic"></div>
+      </div>
+      <div class="detail-block" style="margin-top:12px">
+        <span class="lbl">Terjemahan</span>
+        <div class="val" id="terjemahan"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" id="btn-fav" style="flex:1">★ Favorit</button>
+      <button class="btn btn-outline" id="btn-salin" style="flex:1">Salin</button>
+    </div>
+    <p style="margin-top:12px;font-size:0.82rem;color:var(--text-muted)">Teks doa disalin ke papan klip.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { doa } from './static/js/api.js';
+  import { toast, setupNavbar, setupAuthLinks, escapeHtml } from './static/js/app.js';
+  setupNavbar(); setupAuthLinks();
+
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id')||'0');
+  const elJudul = document.getElementById('judul');
+  const elRef = document.getElementById('referensi');
+  const elArab = document.getElementById('arab');
+  const elLatin = document.getElementById('latin');
+  const elTerj = document.getElementById('terjemahan');
+  const btnFav = document.getElementById('btn-fav');
+  const btnSalin = document.getElementById('btn-salin');
+
+  async function load(){
+    if(!id){ elJudul.textContent='Doa tidak ditemukan'; return; }
+    try{
+      const d = await doa.detail(id);
+      elJudul.textContent = d.judul;
+      elRef.textContent = (d.referensi?'Referensi: '+d.referensi:'-');
+      elArab.textContent = d.arab;
+      elLatin.textContent = d.latin||'-';
+      elTerj.textContent = d.terjemahan||'-';
+      btnFav.textContent = d.is_favorit ? '★ Difavoritkan' : '☆ Favorit';
+    }catch(err){ toast('Gagal memuat doa: '+err.message,'error'); }
+  }
+  load();
+
+  btnFav.onclick = async ()=>{
+    try{
+      const res = await doa.toggleFav(id);
+      btnFav.textContent = res.favorit ? '★ Difavoritkan' : '☆ Favorit';
+      toast(res.message);
+    }catch(err){ toast(err.message,'error'); }
+  };
+
+  btnSalin.onclick = async ()=>{
+    const teks = `${elJudul.textContent}\n${elArab.textContent}\n${elLatin.textContent}\n${elTerj.textContent}`;
+    try{
+      await navigator.clipboard.writeText(teks);
+      toast('Teks disalin.');
+    }catch{
+      // fallback
+      const ta = document.createElement('textarea'); ta.value = teks; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove();
+      toast('Teks disalin.');
+    }
+  };
+</script>
+</body>
+</html>

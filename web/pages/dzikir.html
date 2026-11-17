@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dzikir &amp; Tasbih — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="/web/dashboard.html" class="brand"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links"><a href="/web/dashboard.html">Beranda</a><a href="/web/dzikir.html" class="active">Dzikir</a></div>
+    <div class="nav-actions">
+      <button class="btn btn-icon" id="btn-logout" title="Keluar">🚪</button>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+  <div style="max-width:500px;margin:0 auto">
+    <h2 style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:6px">Dzikir &amp; Tasbih</h2>
+    <p class="section-sub" style="margin-bottom:20px">Hitungan tasbih tersimpan otomatis ke riwayat Anda.</p>
+
+    <div class="card tasbih-card" style="margin-bottom:20px">
+      <div id="judul-dzikir" style="font-size:1rem;font-weight:800;color:var(--secondary);margin-bottom:6px">Tasbih Fatimah</div>
+      <div class="count-big" id="count">0</div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+      </div>
+      <div id="progres" style="font-size:0.9rem;color:var(--text-muted)">0 / 100</div>
+      <div class="tasbih-actions">
+        <button class="btn btn-outline btn-sm" id="btn-reset">Reset</button>
+        <button class="btn btn-primary" id="btn-tambah" style="padding:14px 30px;font-size:1.1rem">+</button>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:10px">Pilih Dzikir</h3>
+    <div id="list-dzikir">
+      <!-- diisi JS -->
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { dzikir } from './static/js/api.js';
+  import { toast, setupNavbar, setupAuthLinks, escapeHtml } from './static/js/app.js';
+  setupNavbar(); setupAuthLinks();
+
+  const elJudul = document.getElementById('judul-dzikir');
+  const elCount = document.getElementById('count');
+  const elFill = document.getElementById('fill');
+  const elProgres = document.getElementById('progres');
+  const btnTambah = document.getElementById('btn-tambah');
+  const btnReset = document.getElementById('btn-reset');
+  const list = document.getElementById('list-dzikir');
+
+  let hitungan = 0;
+  let target = 100;
+  let currentDzikirId = null;
+  let selectedKategori = null;
+
+  async function load(){
+    try{
+      const daftar = await dzikir.list();
+      const byKat = {};
+      daftar.forEach(d=>{ (byKat[d.kategori] = byKat[d.kategori] || []).push(d); });
+      const kats = ['setelah_sholat','pagi','petang','tasbih','istighfar','sholawat'];
+      const labelKat = { setelah_sholat:'Setelah Sholat', pagi:'Dzikir Pagi', petang:'Dzikir Petang', tasbih:'Tasbih', istighfar:'Istighfar', sholawat:'Sholawat' };
+      let html = '';
+      kats.forEach(k=>{
+        const items = byKat[k] || [];
+        if(!items.length) return;
+        html += `<div style="margin-bottom:14px"><div style="font-size:0.8rem;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">${labelKat[k]||k}</div>`;
+        items.forEach(d=>{
+          html += `<div class="doa-item" style="cursor:pointer" onclick="pilih(${d.id}, '${escapeHtml(d.judul)}', ${d.jumlah_dianjurkan||100})">
+            <div class="doa-info"><div class="title">${escapeHtml(d.judul)}</div><div class="sub">${escapeHtml(d.terjemahan||'')}</div></div>
+            <div style="font-size:0.8rem;color:var(--accent);font-weight:800">Pilih</div>
+          </div>`;
+        });
+        html += `</div>`;
+      });
+      list.innerHTML = html;
+      // default pilih pertama
+      if(daftar.length){
+        pilih(daftar[0].id, daftar[0].judul, daftar[0].jumlah_dianjurkan||100);
+      }
+    }catch(err){ toast('Gagal memuat dzikir: '+err.message,'error'); }
+  }
+
+  window.pilih = (id, judul, tj)=>{
+    currentDzikirId = id;
+    target = tj;
+    elJudul.textContent = judul;
+    hitungan = 0;
+    elCount.textContent = '0';
+    elFill.style.width = '0%';
+    elProgres.textContent = '0 / ' + target;
+  };
+
+  btnTambah.onclick = ()=>{
+    hitungan += 1;
+    elCount.textContent = hitungan;
+    const pct = Math.min(100, Math.round((hitungan/target)*100));
+    elFill.style.width = pct + '%';
+    elProgres.textContent = hitungan + ' / ' + target;
+    if(hitungan >= target){
+      toast('Target tercapai! Barakallahu fiik.');
+      simpan();
+      hitungan = 0; elCount.textContent='0'; elFill.style.width='0%'; elProgres.textContent='0 / '+target;
+    } else {
+      simpan();
+    }
+  };
+
+  btnReset.onclick = ()=>{
+    hitungan = 0;
+    elCount.textContent = '0';
+    elFill.style.width = '0%';
+    elProgres.textContent = '0 / ' + target;
+  };
+
+  async function simpan(){
+    if(currentDzikirId === null) return;
+    try{
+      await dzikir.save({ dzikir_id: currentDzikirId, jumlah: hitungan });
+    }catch{}
+  }
+
+  load();
+</script>
+</body>
+</html>

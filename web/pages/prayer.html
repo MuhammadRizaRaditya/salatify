@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Sholat — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="/web/dashboard.html" class="brand"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links"><a href="/web/dashboard.html">Beranda</a><a href="/web/prayer.html" class="active">Jadwal Sholat</a></div>
+    <div class="nav-actions">
+      <button class="btn btn-icon" id="btn-logout" title="Keluar">🚪</button>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+  <div style="max-width:600px;margin:0 auto">
+    <h2 style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:6px">Jadwal Sholat</h2>
+    <p class="section-sub" style="margin-bottom:20px">Lima waktu sholat berdasarkan lokasi dan metode perhitungan.</p>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Lokasi</div>
+          <div class="setting-desc" id="lokasi">-6.2000, 106.8000</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:0.85rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;display:block">Metode Perhitungan</label>
+        <select id="metode" style="width:100;padding:10px 12px;border-radius:10px;border:1px solid rgba(18,63,50,0.16);background:var(--surface);color:var(--text)">
+          <option value="mwml">Kementerian Agama RI</option>
+          <option value="isna">ISNA (Amerika)</option>
+          <option value="makkah">Majlis Ugama Makkah</option>
+          <option value="karachi">Majlis Ugama Karachi</option>
+          <option value="tehran">Institut Geofisik Tehran</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="btn-simpan" style="width:100;margin-top:14px">Simpan Preferensi</button>
+    </div>
+
+    <h3 style="font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:10px">Jadwal Hari Ini</h3>
+    <div class="prayer-grid" id="grid-jadwal"></div>
+    <p id="msg-offline" style="font-size:0.85rem;color:var(--text-muted);margin-top:8px;display:none">Menampilkan data tersimpan (offline).</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { api } from './static/js/api.js';
+  import { toast, setupNavbar, setupAuthLinks } from './static/js/app.js';
+  setupNavbar(); setupAuthLinks();
+
+  const grid = document.getElementById('grid-jadwal');
+  const elLokasi = document.getElementById('lokasi');
+  const elMetode = document.getElementById('metode');
+  const elMsg = document.getElementById('msg-offline');
+  const btnSimpan = document.getElementById('btn-simpan');
+  const labels = ['Subuh','Dzuhur','Ashar','Maghrib','Isya'];
+  const keys = ['subuh','dzuhur','ashar','maghrib','isya'];
+
+  async function load(){
+    try{
+      const data = await api('/prayer/jadwal', { params: { latitude:'-6.2', longitude:'106.8', metode:'mwml' } });
+      elMsg.style.display='none';
+      elLokasi.textContent = (data.lokasi||'-6.2, 106.8');
+      grid.innerHTML = keys.map((k,i)=>`<div class="prayer-item"><span class="name">${labels[i]}</span><span class="time">${data[k]||'--:--'}</span></div>`).join('');
+    }catch(err){
+      elMsg.style.display='block';
+      toast('Gagal memuat jadwal: '+err.message,'error');
+    }
+  }
+  load();
+
+  // Simpan preferensi
+  try{
+    const pref = await api('/prayer/preferensi');
+    if(pref.latitude) elLokasi.textContent = pref.latitude + ', ' + pref.longitude;
+    if(pref.metode) elMetode.value = pref.metode;
+  }catch{}
+  btnSimpan.onclick = async ()=>{
+    try{
+      await api('/prayer/preferensi', {
+        method:'PUT',
+        body: { lokasi: elLokasi.textContent, latitude:'-6.2', longitude:'106.8', metode: elMetode.value }
+      });
+      toast('Preferensi disimpan');
+      load();
+    }catch(err){ toast(err.message,'error'); }
+  };
+</script>
+</body>
+</html>

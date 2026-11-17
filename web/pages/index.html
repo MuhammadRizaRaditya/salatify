@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALATIFY — Smart Islamic Companion</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="#" class="brand" onclick="event.preventDefault();window.scrollTo(0,0)">
+      <div class="mark">S</div> SALATIFY
+    </a>
+    <div class="nav-links">
+      <a href="#fitur">Fitur</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#kontak">Kontak</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/web/login.html" class="btn btn-primary">Masuk</a>
+      <a href="/web/register.html" class="btn btn-outline">Daftar</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>SALATIFY</h1>
+  <p>Smart Islamic Companion — Pendamping ibadah harian Anda dalam satu aplikasi.</p>
+  <div class="hero-actions">
+    <a href="/web/login.html" class="btn btn-accent">Mulai Gratis</a>
+    <a href="#fitur" class="btn btn-outline">Lihat Fitur</a>
+  </div>
+</section>
+
+<section id="fitur" style="padding:40px 16px">
+  <div class="container">
+    <div class="section-title">Fitur Utama</div>
+    <div class="section-sub">Semua kebutuhan ibadah dalam satu tempat, untuk Anda dan keluarga.</div>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>🕋 Jadwal Sholat</h3>
+        <p>Jadwal lima waktu berdasarkan lokasi, hitung mundur, dan metode perhitungan Kemenag RI.</p>
+      </div>
+      <div class="card">
+        <h3>🧭 Arah Kiblat</h3>
+        <p>Kompas digital dengan derajat arah kiblat dari koordinat Anda ke Ka'bah.</p>
+      </div>
+      <div class="card">
+        <h3>📿 Dzikir &amp; Tasbih</h3>
+        <p>Dzikir pagi/petang, tasbih digital, dan riwayat per pengguna.</p>
+      </div>
+      <div class="card">
+        <h3>📖 Kumpulan Doa</h3>
+        <p>14 kategori doa dengan Arab, latin, terjemahan, dan fitur favorit.</p>
+      </div>
+      <div class="card">
+        <h3>🕌 Al-Qur'an</h3>
+        <p>Daftar 114 surah dan pemutar audio murottal.</p>
+      </div>
+      <div class="card">
+        <h3>⚙️ Pengaturan</h3>
+        <p>Profil, notifikasi, tema terang/gelap, dan sinkronisasi data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tentang" style="background:rgba(18,63,50,0.06);padding:40px 16px">
+  <div class="container">
+    <div class="section-title" style="color:var(--primary)">Tentang SALATIFY</div>
+    <div class="section-sub">Dikembangkan oleh Hasan, Luqman, Riza, dan Wisnu.</div>
+    <p style="color:var(--text-muted);max-width:700px;margin:16px auto 0">
+      SALATIFY adalah aplikasi pendamping ibadah umat Islam yang hadir sebagai aplikasi Android dan website
+      responsif, dengan data akun terintegrasi melalui backend FastAPI bersama.
+    </p>
+  </div>
+</section>
+
+<footer id="kontak">
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Dikembangkan oleh <b>Hasan, Luqman, Riza, dan Wisnu</b></div>
+    <div style="color:var(--text-muted);font-size:0.8rem">Versi 1.0.0 · Web Responsive + PWA</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { toast } from './static/js/app.js';
+  window.toast = toast;
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="#" class="brand" onclick="event.preventDefault()"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links">
+      <a href="/web/dashboard.html" class="active">Beranda</a>
+      <a href="/web/prayer.html">Jadwal Sholat</a>
+      <a href="/web/qibla.html">Arah Kiblat</a>
+      <a href="/web/dzikir.html">Dzikir</a>
+      <a href="/web/doa.html">Doa</a>
+      <a href="/web/quran.html">Al-Qur'an</a>
+      <a href="/web/settings.html">Pengaturan</a>
+    </div>
+    <div class="nav-actions">
+      <span id="user-name" class="btn-icon" style="color:var(--primary)">👤</span>
+      <button class="btn btn-icon" id="btn-logout" title="Keluar">🚪</button>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div>
+      <h2 id="salami" style="font-size:1.5rem;font-weight:800;color:var(--primary)">Selamat datang</h2>
+      <p id="tanggal" style="color:var(--text-muted);font-size:0.95"></p>
+      <p id="jam" style="font-size:2rem;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums"></p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:10px">Jadwal Sholat Hari Ini</h3>
+      <div class="prayer-grid" id="grid-jadwal">
+        <!-- diisi JS -->
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(18,63,50,0.08)">
+        <span class="countdown-label" id="lbl-sholat">Sholat berikutnya</span>
+        <div class="countdown-big" id="countdown">--:--</div>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn btn-sm btn-outline" id="btn-refresh">Perbarui Jadwal</button>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <a href="/web/qibla.html" class="card btn" style="text-align:center;color:inherit">
+        <div style="font-size:2rem;margin-bottom:8px">🧭</div>
+        <div class="section-title" style="margin-bottom:0;font-size:1rem">Arah Kiblat</div>
+      </a>
+      <a href="/web/dzikir.html" class="card btn" style="text-align:center;color:inherit">
+        <div style="font-size:2rem;margin-bottom:8px">📿</div>
+        <div class="section-title" style="margin-bottom:0;font-size:1rem">Dzikir &amp; Tasbih</div>
+      </a>
+      <a href="/web/doa.html" class="card btn" style="text-align:center;color:inherit">
+        <div style="font-size:2rem;margin-bottom:8px">📖</div>
+        <div class="section-title" style="margin-bottom:0;font-size:1rem">Kumpulan Doa</div>
+      </a>
+      <a href="/web/quran.html" class="card btn" style="text-align:center;color:inherit">
+        <div style="font-size:2rem;margin-bottom:8px">🕌</div>
+        <div class="section-title" style="margin-bottom:0;font-size:1rem">Al-Qur'an</div>
+      </a>
+      <a href="/web/settings.html" class="card btn" style="text-align:center;color:inherit">
+        <div style="font-size:2rem;margin-bottom:8px">⚙️</div>
+        <div class="section-title" style="margin-bottom:0;font-size:1rem">Pengaturan</div>
+      </a>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:6px;font-size:1rem">Ringkasan Dzikir</div>
+        <div id="ringkasan" style="font-size:1.3rem;font-weight:900;color:var(--primary)">0</div>
+        <div style="font-size:0.82rem;color:var(--text-muted)">total sesi tasbih</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { api } from './static/js/api.js';
+  import { toast, setupNavbar, setupAuthLinks, countdownTo, updateCountdown, formatDateID } from './static/js/app.js';
+
+  setupNavbar();
+  setupAuthLinks();
+
+  const elJam = document.getElementById('jam');
+  const elTgl = document.getElementById('tanggal');
+  const elSalam = document.getElementById('salami');
+  const grid = document.getElementById('grid-jadwal');
+  const lblSholat = document.getElementById('lbl-sholat');
+  const elCount = document.getElementById('countdown');
+  const btnRefresh = document.getElementById('btn-refresh');
+  const elRing = document.getElementById('ringkasan');
+
+  const nama = new URLSearchParams(window.location.search).get('nama') || '';
+  const jamNow = new Date().getHours();
+  let s = 'Malam';
+  if(jamNow>=4&&jamNow<11) s='Pagi';
+  else if(jamNow>=11&&jamNow<15) s='Siang';
+  else if(jamNow>=15&&jamNow<18) s='Sore';
+  elSalam.textContent = 'Selamat ' + s + (nama?', '+nama:'');
+  elTgl.textContent = formatDateID(new Date());
+  setInterval(()=>{ elJam.textContent = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); },1000);
+
+  let timer;
+  async function load(){
+    try{
+      const data = await api('/prayer/jadwal', { params: { latitude:'-6.2', longitude:'106.8', metode:'mwml' } });
+      const keys = ['subuh','dzuhur','ashar','maghrib','isya'];
+      const labels = ['Subuh','Dzuhur','Ashar','Maghrib','Isya'];
+      grid.innerHTML = keys.map((k,i)=>`<div class="prayer-item"><span class="name">${labels[i]}</span><span class="time">${data[k]||'--:--'}</span><span class="countdown" id="cd-${k}">--:--</span></div>`).join('');
+      // next prayer
+      const now = new Date();
+      const urutan = ['subuh','dzuhur','ashar','maghrib','isya'];
+      let next = null;
+      for(const k of urutan){
+        const cd = countdownTo(data[k]);
+        if(cd){ next = {nama:k, waktu:data[k]}; break; }
+      }
+      if(next){
+        lblSholat.textContent = 'Sholat berikutnya: ' + labels[urutan.indexOf(next.nama)];
+        elCount.textContent = countdownTo(next.waktu);
+        clearInterval(timer);
+        timer = setInterval(()=>{ elCount.textContent = countdownTo(next.waktu); }, 1000);
+        keys.forEach(k=>{ const e=document.getElementById('cd-'+k); if(e) e.textContent = countdownTo(data[k]); });
+      }
+    }catch(err){ toast('Gagal memuat jadwal: '+err.message,'error'); }
+  }
+  load();
+  btnRefresh.onclick = load;
+
+  // ringkasan dzikir
+  try{
+    const riwayat = await api('/dzikir/riwayat');
+    elRing.textContent = riwayat?riwayat.length:0;
+  }catch{}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — SALATIFY</title>
+<link rel="stylesheet" href="../static/css/style.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#123F32">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="/web/index.html" class="brand"><div class="mark">S</div> SALATIFY</a>
+    <div class="nav-links"><a href="/web/index.html">Beranda</a></div>
+    <div class="nav-actions"><a href="/web/register.html" class="btn btn-sm btn-outline">Daftar akun baru</a></div>
+  </nav>
+</header>
+
+<div class="page">
+  <div class="form-card card">
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="brand" style="font-size:1.2rem"><div class="mark" style="width:24px;height:24px;font-size:0.9rem">S</div> SALATIFY</div>
+      <h2 style="font-size:1.5rem;font-weight:800;color:var(--primary);margin:10px 0 4px">Masuk</h2>
+      <p style="color:var(--text-muted);font-size:0.9">Selamat datang kembali</p>
+    </div>
+
+    <form id="form-login" novalidate>
+      <div class="form-group">
+        <label>Username atau Email</label>
+        <input type="text" name="username" placeholder="Masukkan username atau email" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
+        <div class="input-hint">Minimal 6 karakter</div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100;margin-top:8px">Masuk</button>
+    </form>
+
+    <p style="text-align:center;margin-top:18px;font-size:0.9;color:var(--text-muted)">
+      Belum punya akun? <a href="/web/register.html" style="color:var(--primary);font-weight:700">Daftar di sini</a>
+    </p>
+    <div style="text-align:center;margin-top:10px">
+      <button class="btn btn-outline btn-sm" style="width:100" id="btn-guest">Masuk sebagai Tamu</button>
+    </div>
+    <p style="text-align:center;margin-top:10px;font-size:0.82rem;color:var(--text-muted)">
+      Mode tamu mencoba fitur dasar tanpa menyimpan data pribadi.
+    </p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">SALATIFY</div>
+    <div class="footer-dev">Smart Islamic Companion · Hasan, Luqman, Riza, dan Wisnu</div>
+  </div>
+</footer>
+
+<div id="salatify-toast" class="toast"></div>
+<script type="module">
+  import { api } from './static/js/api.js';
+  import { toast, requireAuth } from './static/js/app.js';
+  const form = document.getElementById('form-login');
+  const btnGuest = document.getElementById('btn-guest');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const fd = new FormData(form);
+    try{
+      const data = await api('/auth/login', { method:'POST', body: Object.fromEntries(fd), auth:false });
+      localStorage.setItem('salatify_token', data.access_token);
+      localStorage.setItem('salatify_user', JSON.stringify(data));
+      toast('Berhasil masuk');
+      setTimeout(()=>{ window.location.href = '/web/dashboard.html'; }, 700);
+    }catch(err){ toast(err.message, 'error'); }
+  });
+  btnGuest.addEventListener('click', async ()=>{
+    try{
+      const data = await api('/auth/guest', { method:'POST', auth:false });
+      localStorage.setItem('salatify_token', data.access_token);
+      localStorage.setItem('salatify_user', JSON.stringify(data));
+      toast('Mode tamu aktif');
+      setTimeout(()=>{ window.location.href = '/web/dashboard.html'; }, 700);
+    }catch(err){ toast(err.message, 'error'); }
+  });
+</script>
+</body>
+</html>
