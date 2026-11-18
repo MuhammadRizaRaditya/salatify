@@ -304,69 +304,69 @@ UserSettings "1" -- "1" User : user
 ```mermaid
 classDiagram
 class AuthController {
-    +register(username, email, password): bool
-    +login(username_or_email, password): bool
-    +login_guest(): bool
-    +logout(): bool
-    +change_password(old_password, new_password): bool
+    +register(username, email, password) bool
+    +login(username_or_email, password) bool
+    +login_guest() bool
+    +logout() bool
+    +change_password(old_password, new_password) bool
 }
 class DashboardController {
-    +salam(nama): str
-    +tanggal_masehi(): str
-    +tanggal_hijriah(): str
-    +jam_digital(): str
-    +jadwal_hari_ini(lat, lon, metode): dict
-    +countdown_berikutnya(jadwal): tuple
-    +ringkasan_dzikir(): int
+    +salam(nama) str
+    +tanggal_masehi() str
+    +tanggal_hijriah() str
+    +jam_digital() str
+    +jadwal_hari_ini(lat, lon, metode) dict
+    +countdown_berikutnya(jadwal) tuple
+    +ringkasan_dzikir() int
 }
 class PrayerController {
-    +get_preferences(): PrayerPreferences
-    +save_preferences(lokasi, lat, lon, metode, zona_waktu, pengingat_aktif, offset, suara, getaran): PrayerPreferences
-    +ambil_jadwal(lat, lon, metode, tanggal): dict
-    +jadwal_offline(tanggal): dict
-    +hitung_countdown(waktu_str): str
+    +get_preferences() PrayerPreferences
+    +save_preferences(lokasi, lat, lon, metode, zona_waktu, pengingat_aktif, offset, suara, getaran) PrayerPreferences
+    +ambil_jadwal(lat, lon, metode, tanggal) dict
+    +jadwal_offline(tanggal) dict
+    +hitung_countdown(waktu_str) str
 }
 class QiblaController {
-    +hitung_bearing(lat_user, lon_user): float
-    +arah_teks(derajat): str
+    +hitung_bearing(lat_user, lon_user) float
+    +arah_teks(derajat) str
 }
 class DzikirController {
-    +daftar_dzikir(kategori=None): list
-    +simpan_tasbih(jumlah, dzikir_id): bool
-    +riwayat(limit=20): list
+    +daftar_dzikir(kategori=None) list
+    +simpan_tasbih(jumlah, dzikir_id) bool
+    +riwayat(limit=20) list
 }
 class DoaController {
-    +daftar_kategori(): list
-    +daftar_doa(kategori=None, q=None): list
-    +detail(doa_id): Doa
-    +is_favorit(doa_id): bool
-    +toggle_favorit(doa_id): bool
+    +daftar_kategori() list
+    +daftar_doa(kategori=None, q=None) list
+    +detail(doa_id) Doa
+    +is_favorit(doa_id) bool
+    +toggle_favorit(doa_id) bool
 }
 class QuranController {
-    +daftar_surah(q=None): list
-    +detail(surah_id): Surah
-    +toggle_favorit(surah_id): bool
+    +daftar_surah(q=None) list
+    +detail(surah_id) Surah
+    +toggle_favorit(surah_id) bool
 }
 class PrayerService {
-    +get_timings(latitude, longitude, metode, tanggal): dict
+    +get_timings(latitude, longitude, metode, tanggal) dict
 }
 class QiblaService {
-    +bearing_kiblat(lat_user, lon_user): float
+    +bearing_kiblat(lat_user, lon_user) float
 }
 class LocationService {
-    +start(): bool
-    +stop(): None
+    +start() bool
+    +stop() None
 }
 class NotificationService {
-    +kirim(judul, pesan, timeout): bool
-    +pengingat_sholat(nama_sholat, waktu): bool
+    +kirim(judul, pesan, timeout) bool
+    +pengingat_sholat(nama_sholat, waktu) bool
 }
 class QuranService {
-    +daftar_surah(): list
+    +daftar_surah() list
 }
 class AudioService {
-    +play(url): bool
-    +stop(): None
+    +play(url) bool
+    +stop() None
     +playing: bool
 }
 
@@ -426,47 +426,42 @@ SettingsScreen --> AuthController : logout, tema, profil
 ```mermaid
 classDiagram
 class RouterAuth {
-    +post("/auth/register"): UserOut
-    +post("/auth/login"): Token
-    +post("/auth/guest"): Token
-    +get("/auth/me"): UserOut
-    +post("/auth/logout"): message
+    +login(credentials) Token
 }
 class RouterUsers {
-    +get("/users/me"): UserOut
-    +put("/users/password"): message
-    +get("/users/settings"): UserSettingsOut
-    +put("/users/settings"): UserSettingsOut
+    +get_profil() UserOut
+    +change_password(old_password, new_password) message
+    +get_settings() UserSettingsOut
+    +update_settings(payload) UserSettingsOut
 }
 class RouterDoa {
-    +get("/doa/kategori"): list[KategoriDoaOut]
-    +get("/doa"): list[DoaOut]
-    +get("/doa/{doa_id}"): DoaOut
-    +post("/doa/{doa_id}/favorit"): dict
+    +get_kategori() List~KategoriDoaOut~
+    +daftar_doa(kategori, q) List~DoaOut~
+    +get_doa_by_id(doa_id) DoaOut
+    +toggle_favorit_doa(doa_id) bool
 }
 class RouterDzikir {
-    +get("/dzikir"): list[DzikirOut]
-    +get("/dzikir/riwayat"): list[DzikirHistoryOut]
-    +post("/dzikir/riwayat"): DzikirHistoryOut
+    +daftar_dzikir(kategori) List~DzikirOut~
+    +riwayat_dzikir() List~DzikirHistoryOut~
+    +simpan_tasbih(jumlah, dzikir_id) DzikirHistoryOut
 }
 class RouterPrayer {
-    +get("/prayer/jadwal"): PrayerTimeOut
-    +get("/prayer/jadwal/{tanggal}"): PrayerTimeOut
-    +get("/prayer/preferensi"): PrayerPreferencesOut
-    +put("/prayer/preferensi"): PrayerPreferencesOut
+    +jadwal_hari_ini(lat, lon, metode, tanggal) PrayerTimeOut
+    +get_preferensi() PrayerPreferencesOut
+    +set_preferensi(payload) PrayerPreferencesOut
 }
 class RouterQibla {
-    +post("/qibla/hitung"): QiblaResponse
+    +hitung_kiblat(lat, lon) QiblaResponse
 }
 class RouterQuran {
-    +get("/quran/surah"): list[SurahOut]
-    +get("/quran/surah/{surah_id}"): SurahOut
-    +post("/quran/surah/{surah_id}/favorit"): dict
-    +get("/quran/api/surah"): dict
+    +daftar_surah(q) List~SurahOut~
+    +detail_surah(surah_id) SurahOut
+    +toggle_favorit_surah(surah_id) bool
+    +ambil_api_surah() dict
 }
 class RouterReminder {
-    +get("/reminder"): PrayerPreferencesOut
-    +put("/reminder"): PrayerPreferencesOut
+    +get_reminder() PrayerPreferencesOut
+    +set_reminder(payload) PrayerPreferencesOut
 }
 
 class UserRegister
@@ -491,7 +486,6 @@ class QiblaResponse
 RouterAuth -- UserRegister : request
 RouterAuth -- UserLogin : request
 RouterAuth -- Token : response
-RouterAuth -- UserOut : response
 RouterUsers -- UserOut : response
 RouterUsers -- UserSettingsIn : request
 RouterUsers -- UserSettingsOut : response
@@ -510,34 +504,8 @@ RouterQuran -- SurahOut : response
 RouterQuran -- QiblaRequest : request (api/surah)
 RouterReminder -- PrayerPreferencesOut : response
 
-class SalatifyApiClient {
-    +base_url: str
-    +timeout: int
-    +token: str
-    +register(username, email, password): Dict
-    +login(username_or_email, password): Dict
-    +login_guest(): Dict
-    +me(): Dict
-    +logout(): Dict
-    +daftar_doa(kategori, q): list
-    +detail_doa(doa_id): Dict
-    +toggle_favorit_doa(doa_id): Dict
-    +daftar_dzikir(kategori): list
-    +riwayat_dzikir(): list
-    +simpan_tasbih(jumlah, dzikir_id): Dict
-    +jadwal_hari_ini(lat, lon, metode, tanggal): Dict
-    +preferensi(): Dict
-    +set_preferensi(payload): Dict
-    +hitung_kiblat(lat, lon): Dict
-    +daftar_surah(q): list
-    +detail_surah(surah_id): Dict
-    +toggle_favorit_surah(surah_id): Dict
-    +profil(): Dict
-    +settings(): Dict
-    +update_settings(payload): Dict
-    +_headers(): Dict
-    +_get(path, params): Any
-    +_post(path, json): Any
-    +_put(path, json): Any
-}
+~KategoriDoaOut~
+~DoaOut~
+~DzikirOut~
+~SurahOut~
 ```
