@@ -10,3 +10,5 @@ backend_*.txt
 .DS_Store
 venv/
 .env
+PROGRESS_REPORT.md
+AUDIT_BUNDLE.txt

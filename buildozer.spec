@@ -4,9 +4,10 @@ title = SALATIFY
 package.name = salatify
 package.domain = com.hlrw
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,ttf,json
+source.include_exts = py,kv,png,jpg,json,ttf,otf,mp3,ogg,txt
+source.exclude_dirs = web,tests,docs,.git,.github,bin,.buildozer,__pycache__,.venv,venv
 version = 1.0.0
-requirements = python3,kivy==2.3.0,kivymd==1.2.0,sqlalchemy,requests,pytz,passlib,plyer
+requirements = python3,kivy==2.3.0,pillow,sqlalchemy,requests,urllib3,idna,certifi,charset-normalizer,passlib,plyer,pyjnius,exceptiongroup,materialyoucolor,asynckivy,asyncgui,kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip
 orientation = portrait
 fullscreen = 0
 
@@ -17,6 +18,8 @@ android.fullscreen = 0
 android.archs = arm64-v8a
 android.min_sdk = 24
 android.target_sdk = 33
+android.archs = arm64-v8a,armeabi-v7a
+android.accept_sdk_license = True
 android.permissions = INTERNET,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,POST_NOTIFICATIONS,VIBRATE,ACCESS_NETWORK_STATE
 android.meta_data = 
 android.dependencies = 
@@ -33,7 +36,6 @@ android.ndk = 25b
 android.ndk_api = 24
 android.sdk = 24
 android.sdk_version = 33
-android.entrypoint = main.py
 
 buildozer = 1.5.0
 

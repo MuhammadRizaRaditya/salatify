@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 # ---------- Auth ----------
 class UserRegister(BaseModel):
     username: str
-    email: EmailStr
+    email: str
     password: str
 
 
