@@ -1,5 +1,9 @@
 """Unit tests for backend API authentication routes."""
 
+import os
+os.environ["SALATIFY_ENV"] = "development"
+os.environ["SALATIFY_SECRET_KEY"] = "test-dev-key-must-be-at-least-32-chars-long!"
+
 import unittest
 
 from sqlalchemy import create_engine

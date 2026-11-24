@@ -151,6 +151,16 @@ File APK hasil build disimpan di `bin/salatify-1.0.0-debug.apk`.
 - Password tidak ditampilkan di database atau log.
 - Data pengguna terpisah per user_id.
 
+## Konfigurasi Environment
+
+Buat file `.env` di root proyek berdasarkan `.env.example`. Variabel penting:
+
+- `SALATIFY_SECRET_KEY`: Kunci rahasia HS256 sepanjang 48 huruf. **Wajib diatur di produksi**. Untuk menghasilkan: `python -c "import secrets; print(secrets.token_urlsafe(48))"`. Pada mode development (`SALATIFY_ENV=development`) key sementara diterima namun token akan tidak valid setelah restart.
+- `SALATIFY_TOKEN_EXPIRE_MINUTES`: Masa berlaku token dalam menit (default: 10080 = 7 hari).
+- `SALATIFY_ENV`: Mode environment, `"development"` atau `"production"`.
+
+Jangan commit file `.env` ke repo. File `.gitignore` sudah mencakup `.env`.
+
 ## Versi Website
 
 SALATIFY sekarang juga memiliki versi website yang dapat diakses melalui browser Google Chrome dan Microsoft Edge. Versi website menggunakan:
