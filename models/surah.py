@@ -15,6 +15,7 @@ class Surah(Base):
     arti = Column(String(100), nullable=True)
     jumlah_ayat = Column(Integer, nullable=True)
     jenis = Column(String(20), nullable=True)  # Makkiyah / Madaniyah
+    audio_url = Column(String(500), nullable=True)  # URL mp3 murottal dari API
 
 
 class FavoriteSurah(Base):

@@ -77,6 +77,7 @@ DB_NAME = "salatify.db"
 # API endpoints (sumber publik yang dapat dipercaya)
 API_PRAYER_TIMES = "https://api.aladhan.com/v1/timings"
 API_QURAN_SURAH = "https://equran.id/api/v2/surah"
+API_QURAN_SURAH_DETAIL = "https://equran.id/api/v2/surat/{}"
 
 # Interval notifikasi pengingat (menit)
 REMINDER_OFFSETS = [0, 5, 10, 15]

@@ -54,7 +54,7 @@ class SalatifyApp(MDApp):
         self.qibla = QiblaController()
         self.dzikir = DzikirController(user_id=None)
         self.doa = DoaController(user_id=None)
-        self.quran = QuranController(user_id=None)
+        self.quran = QuranController(user_id=None, audio_service=self.audio)
 
         Window.clearcolor = (0.945, 0.957, 0.941, 1)  # #F1F4F5-ish
         Window.softinput_mode = "below_target"

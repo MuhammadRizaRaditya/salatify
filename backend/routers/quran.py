@@ -4,6 +4,7 @@ import requests
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from backend.auth import get_optional_current_user
 from backend.database import get_db
 from backend.models import Surah, FavoriteSurah, User
 from backend.schemas import SurahOut
@@ -51,7 +52,7 @@ def detail_surah_public(
 def toggle_favorit_surah(
     surah_id: int,
     db: Session = Depends(get_db),
-    current_user: User | None = None,
+    current_user: User | None = Depends(get_optional_current_user),
 ):
     """Endpoint favorit (butuh login/tamu)."""
     if current_user and current_user.is_guest:
